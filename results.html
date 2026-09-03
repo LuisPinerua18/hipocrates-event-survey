@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Resultados — Encuesta del evento</title>
+  <meta name="robots" content="noindex" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: hsl(215 32% 8%);
+      --panel: hsl(215 24% 13%);
+      --panel-2: hsl(215 22% 16%);
+      --line: hsl(215 20% 22%);
+      --ink: hsl(40 22% 94%);
+      --muted: hsl(215 12% 64%);
+      --faint: hsl(215 12% 46%);
+      --mint: hsl(158 52% 56%);
+      --blue: hsl(204 62% 66%);
+      --grad: linear-gradient(90deg, hsl(158 52% 52%), hsl(204 62% 62%));
+      --warm: hsl(40 60% 72%);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Poppins", system-ui, sans-serif; color: var(--ink);
+      background:
+        radial-gradient(1100px 600px at 90% -8%, hsl(204 45% 20% / 0.5), transparent 60%),
+        radial-gradient(1000px 560px at -8% 4%, hsl(158 45% 20% / 0.45), transparent 55%),
+        var(--bg);
+      background-attachment: fixed; min-height: 100vh; -webkit-font-smoothing: antialiased;
+      padding: 0 22px 70px;
+    }
+    .wrap { max-width: 1080px; margin: 0 auto; }
+    .display { font-family: "Bebas Neue", "Poppins", sans-serif; font-weight: 400; letter-spacing: 0.01em; }
+
+    /* Gate */
+    .gate { min-height: 100vh; display: grid; place-items: center; }
+    .gate-card {
+      max-width: 460px; width: 100%; background: var(--panel); border: 1px solid var(--line);
+      border-radius: 18px; padding: 30px 28px; box-shadow: 0 20px 60px hsl(215 45% 4% / 0.5);
+    }
+    .gate-card h1 { font-size: 22px; font-weight: 600; }
+    .gate-card p { color: var(--muted); font-size: 14px; margin-top: 10px; line-height: 1.55; }
+    .gate-card p a { color: var(--mint); }
+    .gate-card input {
+      width: 100%; margin-top: 18px; padding: 13px 15px; border-radius: 11px;
+      border: 1.5px solid var(--line); background: var(--panel-2); color: var(--ink);
+      font-family: inherit; font-size: 14px;
+    }
+    .gate-card input:focus { outline: none; border-color: var(--mint); }
+    .gate-card .btn {
+      width: 100%; margin-top: 14px; border: none; cursor: pointer; color: #04120d;
+      font-family: inherit; font-weight: 600; font-size: 16px; padding: 14px; border-radius: 12px;
+      background: var(--grad);
+    }
+    .gate-err { color: hsl(0 65% 68%); font-size: 13px; margin-top: 12px; display: none; }
+    .gate-err.show { display: block; }
+    .gate-note { color: var(--faint); font-size: 12px; margin-top: 16px; line-height: 1.5; }
+
+    /* Dashboard */
+    .dash { display: none; padding-top: 34px; }
+    .dash.show { display: block; }
+    .topbar { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 8px; }
+    .brand { display: inline-flex; align-items: center; gap: 9px; font-weight: 600; font-size: 13px; color: var(--mint); }
+    .brand .dot { width: 22px; height: 22px; border-radius: 7px; background: var(--grad); display: grid; place-items: center; color: #04120d; font-weight: 800; font-size: 13px; }
+    .controls { margin-left: auto; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .ctrl {
+      font-family: inherit; font-size: 13px; color: var(--ink); cursor: pointer;
+      background: var(--panel); border: 1px solid var(--line); border-radius: 9px; padding: 8px 13px;
+      display: inline-flex; align-items: center; gap: 7px; transition: border-color .15s;
+    }
+    .ctrl:hover { border-color: var(--mint); }
+    .ctrl.on { border-color: var(--mint); color: var(--mint); }
+    .updated { font-size: 12px; color: var(--faint); }
+
+    .headline { display: flex; align-items: baseline; gap: 16px; margin: 6px 0 26px; flex-wrap: wrap; }
+    .total-num { font-family: "Bebas Neue", sans-serif; font-size: clamp(56px, 12vw, 96px); line-height: 0.9; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .total-lbl { font-size: 16px; color: var(--muted); }
+
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 780px) { .grid { grid-template-columns: 1fr; } }
+
+    .q {
+      background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 22px 20px;
+      box-shadow: 0 14px 40px hsl(215 40% 4% / 0.4);
+    }
+    .q.wide { grid-column: 1 / -1; }
+    .q-title { font-size: 17px; font-weight: 600; line-height: 1.3; text-wrap: balance; }
+    .q-sub { font-size: 12.5px; color: var(--faint); margin-top: 3px; }
+
+    .bars { margin-top: 18px; display: flex; flex-direction: column; gap: 13px; }
+    .bar-row { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; align-items: center; }
+    .bar-label { font-size: 14.5px; color: var(--ink); }
+    .bar-val { font-size: 14px; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .bar-track { grid-column: 1 / -1; height: 14px; border-radius: 999px; background: hsl(215 22% 20%); overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 999px; background: var(--grad); width: 0; transition: width .6s cubic-bezier(.4,0,.2,1); }
+    .bar-row.top .bar-label { font-weight: 600; }
+    .bar-row.top .bar-fill { box-shadow: 0 0 16px hsl(158 60% 50% / 0.5); }
+
+    .texts { margin-top: 16px; display: flex; flex-direction: column; gap: 10px; max-height: 420px; overflow-y: auto; padding-right: 6px; }
+    .quote {
+      background: var(--panel-2); border-left: 3px solid var(--mint); border-radius: 8px;
+      padding: 12px 15px; font-size: 16px; line-height: 1.45; color: var(--ink);
+    }
+    .quote.big { font-size: 19px; }
+    .empty { color: var(--faint); font-size: 14px; padding: 10px 0; }
+
+    .other-list { margin-top: 14px; padding-top: 14px; border-top: 1px dashed var(--line); }
+    .other-list .ol-k { font-size: 11.5px; letter-spacing: 0.08em; color: var(--faint); text-transform: uppercase; margin-bottom: 8px; }
+    .other-list .chip { display: inline-block; background: var(--panel-2); border: 1px solid var(--line); border-radius: 999px; padding: 5px 12px; font-size: 13px; margin: 0 6px 6px 0; }
+
+    footer { margin-top: 30px; text-align: center; color: var(--faint); font-size: 12px; }
+  </style>
+</head>
+<body>
+  <!-- Gate -->
+  <div class="gate" id="gate">
+    <div class="gate-card">
+      <h1>Resultados de la encuesta</h1>
+      <p>Pega tu <b>service_role key</b> de Supabase para ver las respuestas. Se queda solo en este navegador (no se guarda en el archivo ni se comparte).</p>
+      <p>La encuentras en: Supabase → tu proyecto → <b>Project Settings → API → service_role</b> (Reveal).</p>
+      <input id="keyInput" type="password" placeholder="Pega aquí tu service_role key…" autocomplete="off" spellcheck="false" />
+      <button class="btn" id="loadBtn">Ver resultados</button>
+      <div class="gate-err" id="gateErr"></div>
+      <div class="gate-note">⚠️ La service_role key da acceso total a tu base. Úsala solo en tu propio dispositivo y no compartas pantalla mientras la pegas.</div>
+    </div>
+  </div>
+
+  <!-- Dashboard -->
+  <div class="wrap dash" id="dash">
+    <div class="topbar">
+      <span class="brand"><span class="dot">H</span> Resultados en vivo · UNANESO</span>
+      <div class="controls">
+        <span class="updated" id="updated"></span>
+        <button class="ctrl" id="hideTests">Ocultar pruebas</button>
+        <button class="ctrl" id="autoBtn">Auto-refrescar</button>
+        <button class="ctrl" id="refreshBtn">↻ Refrescar</button>
+        <button class="ctrl" id="forgetBtn">Salir</button>
+      </div>
+    </div>
+
+    <div class="headline">
+      <span class="total-num" id="totalNum">0</span>
+      <span class="total-lbl">respuestas recibidas</span>
+    </div>
+
+    <div class="grid" id="grid"></div>
+
+    <footer>Hipócrates Salud · panel interno de resultados</footer>
+  </div>
+
+  <script>
+    (function () {
+      var SUPABASE_URL = "https://nhrvrpaxvcterehnjtwf.supabase.co";
+      var SS_KEY = "hs_event_service_key";
+
+      var CHOICES = [
+        { name: "role", title: "¿Cómo llegan a la sala?", sub: "Pregunta 1",
+          opts: [["doctor","Médico independiente"],["center","Centro médico"],["both","Ambos"],["other","Otro"]] },
+        { name: "admin_hours", title: "Horas/semana en tareas que NO son atender pacientes", sub: "Pregunta 3",
+          opts: [["lt4","Menos de 4 horas"],["gt4","Más de 4 horas"],["no_idea","Ni idea, pero es bastante"],["no_paperwork","No lleno papeles"]] },
+        { name: "recall_diagnosis", title: "¿Recuerdan el diagnóstico de un paciente de hace 3 años sin buscar?", sub: "Pregunta 4",
+          opts: [["yes","Sí"],["no","No"]] },
+        { name: "patient_retention", title: "¿Sus pacientes se quedan o les pierden el rastro?", sub: "Pregunta 5",
+          opts: [["stay","Se quedan; sé quiénes vuelven"],["some","Más o menos"],["lost","Les pierdo el rastro"]] }
+      ];
+      var TEXTS = [
+        { name: "motivation", title: "¿Por qué eligieron la medicina?", sub: "Pregunta 2 · para la apertura" },
+        { name: "recovered_time", title: "¿En qué usarían 5 horas recuperadas?", sub: "Pregunta 6 · para el cierre" }
+      ];
+
+      var gate = document.getElementById("gate");
+      var dash = document.getElementById("dash");
+      var keyInput = document.getElementById("keyInput");
+      var gateErr = document.getElementById("gateErr");
+      var grid = document.getElementById("grid");
+      var key = null, autoTimer = null, hideTests = true;
+
+      function esc(s) { return (s || "").replace(/[&<>"]/g, function (c) { return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]; }); }
+      function isTest(r) { return /prueba/i.test(r.motivation || "") || /prueba/i.test(r.recovered_time || "") || /prueba/i.test(r.role_other || ""); }
+
+      function fetchRows() {
+        return fetch(SUPABASE_URL + "/rest/v1/event_survey_responses?select=*&order=created_at.desc", {
+          headers: { apikey: key, Authorization: "Bearer " + key }
+        }).then(function (res) {
+          if (!res.ok) throw new Error("HTTP " + res.status);
+          return res.json();
+        });
+      }
+
+      function render(rows) {
+        if (hideTests) rows = rows.filter(function (r) { return !isTest(r); });
+        document.getElementById("totalNum").textContent = rows.length;
+        var html = "";
+
+        CHOICES.forEach(function (q) {
+          var counts = {}, maxc = 0;
+          q.opts.forEach(function (o) { counts[o[0]] = 0; });
+          rows.forEach(function (r) { if (r[q.name] != null && counts[r[q.name]] != null) counts[r[q.name]]++; });
+          q.opts.forEach(function (o) { if (counts[o[0]] > maxc) maxc = counts[o[0]]; });
+          var total = rows.length || 1;
+          var bars = q.opts.map(function (o) {
+            var c = counts[o[0]], pct = Math.round(c / total * 100), w = maxc ? Math.round(c / maxc * 100) : 0;
+            var top = (c === maxc && maxc > 0) ? " top" : "";
+            return '<div class="bar-row' + top + '"><div class="bar-label">' + esc(o[1]) + '</div>' +
+              '<div class="bar-val">' + c + ' · ' + pct + '%</div>' +
+              '<div class="bar-track"><div class="bar-fill" style="width:' + w + '%"></div></div></div>';
+          }).join("");
+          html += '<div class="q"><div class="q-title">' + esc(q.title) + '</div><div class="q-sub">' + esc(q.sub) + '</div><div class="bars">' + bars + '</div></div>';
+        });
+
+        TEXTS.forEach(function (q) {
+          var answers = rows.map(function (r) { return (r[q.name] || "").trim(); }).filter(Boolean);
+          var list = answers.length
+            ? answers.map(function (a) { return '<div class="quote big">' + esc(a) + '</div>'; }).join("")
+            : '<div class="empty">Aún no hay respuestas.</div>';
+          var extra = "";
+          if (q.name === "role" ) {} // placeholder
+          html += '<div class="q wide"><div class="q-title">' + esc(q.title) + '</div><div class="q-sub">' + esc(q.sub) + ' · ' + answers.length + ' respuestas</div><div class="texts">' + list + '</div></div>';
+        });
+
+        var others = rows.map(function (r) { return (r.role_other || "").trim(); }).filter(Boolean);
+        if (others.length) {
+          html += '<div class="q wide"><div class="q-title">Respuestas de "Otro" (Pregunta 1)</div><div class="other-list" style="border:none;margin:0;padding:0"><div class="ol-k">' + others.length + ' aclaraciones</div>' +
+            others.map(function (o) { return '<span class="chip">' + esc(o) + '</span>'; }).join("") + '</div></div>';
+        }
+
+        grid.innerHTML = html;
+        var d = new Date();
+        document.getElementById("updated").textContent = "Actualizado " + d.toLocaleTimeString("es", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+      }
+
+      function load() {
+        return fetchRows().then(render).catch(function (e) {
+          gateErr.textContent = "No se pudo cargar (" + e.message + "). ¿La key es correcta (service_role)?";
+          gateErr.classList.add("show");
+          throw e;
+        });
+      }
+
+      function start(k) {
+        key = k;
+        try { sessionStorage.setItem(SS_KEY, k); } catch (e) {}
+        load().then(function () {
+          gate.style.display = "none";
+          dash.classList.add("show");
+        }).catch(function () {});
+      }
+
+      document.getElementById("loadBtn").addEventListener("click", function () {
+        var k = keyInput.value.trim();
+        if (!k) { gateErr.textContent = "Pega tu service_role key."; gateErr.classList.add("show"); return; }
+        start(k);
+      });
+      keyInput.addEventListener("keydown", function (e) { if (e.key === "Enter") document.getElementById("loadBtn").click(); });
+
+      document.getElementById("refreshBtn").addEventListener("click", function () { load(); });
+      document.getElementById("hideTests").addEventListener("click", function () {
+        hideTests = !hideTests; this.classList.toggle("on", hideTests); load();
+      });
+      document.getElementById("hideTests").classList.add("on");
+      document.getElementById("autoBtn").addEventListener("click", function () {
+        if (autoTimer) { clearInterval(autoTimer); autoTimer = null; this.classList.remove("on"); }
+        else { autoTimer = setInterval(load, 20000); this.classList.add("on"); load(); }
+      });
+      document.getElementById("forgetBtn").addEventListener("click", function () {
+        try { sessionStorage.removeItem(SS_KEY); } catch (e) {}
+        location.reload();
+      });
+
+      var saved = null;
+      try { saved = sessionStorage.getItem(SS_KEY); } catch (e) {}
+      if (saved) start(saved);
+    })();
+  </script>
+</body>
+</html>
