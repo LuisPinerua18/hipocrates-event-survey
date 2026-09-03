@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Antes de vernos — Hipócrates Salud</title>
+  <meta name="description" content="Dos minutos para contar lo que nadie te pregunta. Anónimo." />
+  <meta name="robots" content="noindex" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --mint: hsl(158 45% 55%);
+      --mint-strong: hsl(158 46% 40%);
+      --mint-ink: hsl(158 40% 22%);
+      --blue: hsl(204 45% 75%);
+      --blue-deep: hsl(204 45% 38%);
+      --cream: hsl(45 25% 96%);
+      --ink: hsl(210 17% 15%);
+      --muted: hsl(210 12% 46%);
+      --border: hsl(210 16% 88%);
+      --card: hsl(0 0% 100%);
+      --field: hsl(210 20% 98%);
+      --shadow: 0 1px 2px hsl(210 20% 20% / 0.04), 0 12px 32px hsl(158 30% 30% / 0.07);
+      --shadow-lift: 0 2px 6px hsl(210 20% 20% / 0.06), 0 18px 44px hsl(158 30% 30% / 0.12);
+      --radius: 16px;
+      --grad: linear-gradient(135deg, hsl(158 45% 55%), hsl(204 45% 72%));
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { -webkit-text-size-adjust: 100%; }
+
+    body {
+      font-family: "Poppins", system-ui, -apple-system, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(1200px 600px at 100% -10%, hsl(204 55% 92% / 0.7), transparent 60%),
+        radial-gradient(1000px 560px at -10% 0%, hsl(158 50% 90% / 0.7), transparent 55%),
+        var(--cream);
+      background-attachment: fixed;
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ---------- Top bar ---------- */
+    .topbar { position: fixed; top: 0; left: 0; right: 0; z-index: 40; height: 3px; background: hsl(158 25% 88%); }
+    .topbar .fill { height: 100%; width: 4%; background: var(--grad); transition: width .5s cubic-bezier(.4,0,.2,1); }
+    .back {
+      position: fixed; top: 14px; left: 14px; z-index: 41;
+      display: none; align-items: center; gap: 6px;
+      border: none; background: hsl(0 0% 100% / 0.75); backdrop-filter: blur(6px);
+      color: var(--muted); font-family: inherit; font-size: 13.5px; font-weight: 500;
+      padding: 8px 13px 8px 10px; border-radius: 999px; cursor: pointer;
+      box-shadow: var(--shadow); transition: color .18s, transform .18s;
+    }
+    .back:hover { color: var(--mint-strong); }
+    .back:active { transform: scale(0.97); }
+    .back.show { display: inline-flex; }
+    .back svg { width: 15px; height: 15px; }
+
+    /* ---------- Stage / steps ---------- */
+    .stage { width: 100%; max-width: 600px; margin: 0 auto; padding: 0 22px; }
+    .step {
+      display: none;
+      min-height: 100vh; min-height: 100dvh;
+      flex-direction: column; justify-content: center;
+      padding: 78px 0 calc(40px + env(safe-area-inset-bottom));
+    }
+    .step.active { display: flex; }
+    .step.active .inner { animation: stepIn .42s cubic-bezier(.2,.7,.3,1) both; }
+    @keyframes stepIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+    .q-index { font-family: "Bebas Neue", "Poppins", sans-serif; letter-spacing: 0.1em; font-size: 14px; color: var(--mint-strong); margin-bottom: 10px; }
+    .q-title { font-size: clamp(21px, 5.6vw, 27px); font-weight: 600; line-height: 1.25; text-wrap: balance; letter-spacing: -0.01em; }
+    .q-hint { font-size: 14.5px; color: var(--muted); margin-top: 10px; }
+
+    /* ---------- Options ---------- */
+    .options { display: flex; flex-direction: column; gap: 10px; margin-top: 24px; }
+    .options.duo { display: grid; grid-template-columns: 1fr 1fr; }
+    .options.duo .face { justify-content: center; font-size: 17px; font-weight: 600; padding: 20px 16px; }
+    .option { position: relative; display: block; cursor: pointer; }
+    .option input { position: absolute; opacity: 0; inset: 0; width: 100%; height: 100%; cursor: pointer; margin: 0; }
+    .option .face {
+      display: flex; align-items: center; gap: 13px;
+      padding: 16px 16px; border-radius: 13px;
+      border: 1.5px solid var(--border); background: var(--card);
+      font-size: 15.5px; color: var(--ink); box-shadow: var(--shadow);
+      transition: border-color .18s, background .18s, box-shadow .18s, transform .12s;
+    }
+    .option .tick { flex: none; width: 21px; height: 21px; border-radius: 999px; border: 2px solid hsl(210 15% 78%); background: #fff; display: grid; place-items: center; transition: border-color .18s, background .18s; }
+    .option .tick::after { content: ""; width: 9px; height: 9px; border-radius: 999px; background: transparent; transition: background .18s; }
+    .option:hover .face { border-color: hsl(158 40% 62%); transform: translateY(-1px); }
+    .option:has(input:checked) .face { border-color: var(--mint); background: hsl(158 45% 96.5%); box-shadow: inset 0 0 0 1px var(--mint), var(--shadow); }
+    .option:has(input:checked) .tick { border-color: var(--mint); }
+    .option:has(input:checked) .tick::after { background: var(--mint); }
+    .option:has(input:focus-visible) .face { outline: 3px solid hsl(204 55% 72% / 0.55); outline-offset: 2px; }
+
+    /* ---------- Text fields ---------- */
+    .field {
+      width: 100%; font-family: inherit; font-size: 17px; color: var(--ink);
+      padding: 16px 17px; border-radius: 13px; border: 1.5px solid var(--border);
+      background: var(--card); resize: none; line-height: 1.5; box-shadow: var(--shadow);
+      transition: border-color .18s, box-shadow .18s; margin-top: 24px;
+    }
+    .field::placeholder { color: hsl(210 12% 66%); }
+    .field:focus { outline: none; border-color: var(--mint); box-shadow: inset 0 0 0 1px var(--mint), var(--shadow); }
+    textarea.field { min-height: 58px; }
+
+    /* ---------- Reveal (Otro) ---------- */
+    .reveal { display: none; }
+    .reveal.show { display: block; animation: stepIn .3s ease both; }
+    .reveal .field { margin-top: 12px; }
+
+    /* ---------- Actions ---------- */
+    .actions { margin-top: 26px; display: flex; flex-direction: column; gap: 12px; }
+    .btn {
+      width: 100%; border: none; cursor: pointer; color: #fff;
+      font-family: inherit; font-weight: 600; font-size: 16.5px; letter-spacing: 0.01em;
+      padding: 16px 20px; border-radius: 14px; background: var(--grad);
+      box-shadow: var(--shadow-lift); transition: transform .15s, filter .15s, opacity .15s;
+    }
+    .btn:hover { filter: brightness(1.04); }
+    .btn:active { transform: translateY(1px) scale(0.995); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .enter-hint { font-size: 12.5px; color: hsl(210 12% 62%); text-align: center; }
+    .enter-hint b { color: var(--muted); font-weight: 600; }
+    .step-error { display: none; margin-top: 12px; color: hsl(0 65% 42%); font-size: 13.5px; font-weight: 500; }
+    .step-error.show { display: block; }
+
+    /* ---------- Welcome ---------- */
+    .brand {
+      display: inline-flex; align-items: center; gap: 9px;
+      font-weight: 600; font-size: 13px; color: var(--mint-strong);
+      padding: 7px 15px 7px 11px; border-radius: 999px;
+      background: hsl(0 0% 100% / 0.7); border: 1px solid hsl(158 40% 55% / 0.25);
+      box-shadow: var(--shadow); backdrop-filter: blur(6px); align-self: center;
+    }
+    .dot { width: 22px; height: 22px; border-radius: 7px; background: var(--grad); display: grid; place-items: center; color: #fff; font-weight: 700; font-size: 13px; }
+    .welcome { text-align: center; }
+    .welcome .eyebrow { margin-top: 26px; font-family: "Bebas Neue", "Poppins", sans-serif; letter-spacing: 0.14em; font-size: 15px; color: var(--blue-deep); }
+    .welcome h1 {
+      font-family: "Poppins", sans-serif; font-weight: 700;
+      line-height: 1.08; text-wrap: balance; font-size: clamp(28px, 6.6vw, 46px);
+      letter-spacing: -0.02em; margin-top: 8px;
+      background: linear-gradient(135deg, hsl(158 46% 38%), hsl(204 45% 44%));
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
+    .welcome .lede { margin: 18px auto 0; max-width: 42ch; color: var(--muted); font-size: 16px; text-wrap: pretty; }
+    .welcome .lede strong { color: var(--ink); font-weight: 600; }
+    .welcome .actions { margin-top: 30px; max-width: 340px; margin-left: auto; margin-right: auto; }
+    .welcome .presenter { margin-top: 24px; display: inline-flex; align-items: center; gap: 8px; font-weight: 600; font-size: 15px; color: var(--mint-strong); }
+    .welcome .presenter .dot { width: 20px; height: 20px; font-size: 12px; }
+    .welcome .meta { margin-top: 9px; font-size: 13px; color: var(--muted); }
+
+    /* ---------- Thanks ---------- */
+    .thanks { text-align: center; }
+    .thanks .seal { width: 82px; height: 82px; margin: 0 auto 24px; border-radius: 23px; background: var(--grad); display: grid; place-items: center; box-shadow: var(--shadow-lift); }
+    .thanks .seal svg { width: 42px; height: 42px; }
+    .thanks h2 { font-family: "Bebas Neue", "Poppins", sans-serif; font-weight: 400; font-size: clamp(44px, 12vw, 64px); line-height: 0.95; letter-spacing: 0.01em; color: var(--mint-ink); }
+    .thanks p { max-width: 40ch; margin: 16px auto 0; color: var(--muted); font-size: 16px; }
+    .thanks .kicker { margin-top: 22px; font-size: 14px; color: var(--blue-deep); font-weight: 500; }
+    .invite {
+      margin-top: 26px; display: inline-block; padding: 20px 30px; border-radius: 18px;
+      background: linear-gradient(160deg, hsl(158 45% 96%), hsl(204 42% 96%));
+      border: 1px solid hsl(158 40% 55% / 0.35); box-shadow: var(--shadow);
+    }
+    .invite .invite-k { font-size: 11.5px; font-weight: 700; letter-spacing: 0.13em; color: var(--blue-deep); }
+    .invite .invite-date { font-family: "Bebas Neue", "Poppins", sans-serif; font-size: clamp(34px, 9vw, 46px); line-height: 1; color: var(--mint-ink); margin-top: 7px; letter-spacing: 0.01em; }
+    .invite .invite-org { font-size: 15px; font-weight: 600; color: var(--mint-strong); margin-top: 5px; }
+
+    @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+  </style>
+</head>
+<body>
+  <div class="topbar" aria-hidden="true"><div class="fill" id="fill"></div></div>
+  <button class="back" id="back" type="button" aria-label="Volver a la pregunta anterior">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6" /></svg>
+    Atrás
+  </button>
+
+  <form id="survey" class="stage" novalidate>
+
+    <!-- Welcome -->
+    <section class="step" data-step="welcome">
+      <div class="inner welcome">
+        <span class="brand"><span class="dot"></span> UNANESO · Evento</span>
+        <div class="eyebrow">ANTES DE VERNOS</div>
+        <h1>2 minutos para contar lo que nadie te pregunta</h1>
+        <p class="lede">No hay respuestas correctas ni malas. Solo queremos que la charla del evento hable de lo que <strong>a ti</strong> te pasa.</p>
+        <div class="actions">
+          <button class="btn" type="button" data-next>Empezar</button>
+        </div>
+        <div class="presenter"><span class="dot">H</span> Hipócrates Salud</div>
+        <div class="meta">Anónimo · toma dos minutos</div>
+      </div>
+    </section>
+
+    <!-- P1: role -->
+    <section class="step" data-step="role" data-name="role" data-type="radio">
+      <div class="inner">
+        <div class="q-index">PARA CONOCER A LA SALA</div>
+        <div class="q-title">¿Cuál de estas opciones te describe mejor?</div>
+        <div class="options">
+          <label class="option"><input type="radio" name="role" value="doctor" /><span class="face"><span class="tick"></span>Soy médico(a) y atiendo mi consultorio.</span></label>
+          <label class="option"><input type="radio" name="role" value="center" /><span class="face"><span class="tick"></span>Represento o dirijo un centro médico.</span></label>
+          <label class="option"><input type="radio" name="role" value="both" /><span class="face"><span class="tick"></span>Combino las dos cosas todos los días.</span></label>
+          <label class="option"><input type="radio" name="role" value="other" data-hold /><span class="face"><span class="tick"></span>Ninguna de las anteriores / Otro.</span></label>
+        </div>
+        <div class="reveal" data-reveal>
+          <input class="field" type="text" name="role_other" data-other maxlength="500" placeholder="Cuéntanos tu caso en pocas palabras…" />
+          <div class="actions"><button class="btn" type="button" data-next>Continuar</button></div>
+        </div>
+        <p class="step-error">Elige una opción para seguir.</p>
+      </div>
+    </section>
+
+    <!-- P2: motivation -->
+    <section class="step" data-step="motivation" data-name="motivation" data-type="text">
+      <div class="inner">
+        <div class="q-index">CUÉNTANOS</div>
+        <div class="q-title">¿Qué te hizo elegir la medicina o tu profesión?</div>
+        <div class="q-hint">En una sola frase, sin pensarlo mucho.</div>
+        <textarea class="field" name="motivation" rows="2" maxlength="2000" data-rotate placeholder="Por el ejemplo de un familiar…"></textarea>
+        <div class="actions">
+          <button class="btn" type="button" data-next>Continuar</button>
+          <div class="enter-hint">o presiona <b>Enter ↵</b></div>
+        </div>
+        <p class="step-error">Escribe una frase para seguir.</p>
+      </div>
+    </section>
+
+    <!-- P3: admin_hours -->
+    <section class="step" data-step="admin_hours" data-name="admin_hours" data-type="radio">
+      <div class="inner">
+        <div class="q-index">TU SEMANA</div>
+        <div class="q-title">¿Cuántas horas por semana dedicas a tareas que NO son atender tus pacientes?</div>
+        <div class="q-hint">Papeleo, cobros, agenda, buscar información, administrar.</div>
+        <div class="options">
+          <label class="option"><input type="radio" name="admin_hours" value="lt4" /><span class="face"><span class="tick"></span>Menos de 4 horas</span></label>
+          <label class="option"><input type="radio" name="admin_hours" value="gt4" /><span class="face"><span class="tick"></span>Más de 4 horas</span></label>
+          <label class="option"><input type="radio" name="admin_hours" value="no_idea" /><span class="face"><span class="tick"></span>Ni idea, pero creo que es bastante</span></label>
+          <label class="option"><input type="radio" name="admin_hours" value="no_paperwork" /><span class="face"><span class="tick"></span>No lleno papeles</span></label>
+        </div>
+        <p class="step-error">Elige una opción para seguir.</p>
+      </div>
+    </section>
+
+    <!-- P4: recall_diagnosis -->
+    <section class="step" data-step="recall_diagnosis" data-name="recall_diagnosis" data-type="radio">
+      <div class="inner">
+        <div class="q-index">EN LA CONSULTA</div>
+        <div class="q-title">Un paciente que no ves hace 3 años entra hoy a tu consulta. ¿Puedes recordar o ubicar su diagnóstico exacto sin perder tiempo buscando?</div>
+        <div class="options duo">
+          <label class="option"><input type="radio" name="recall_diagnosis" value="yes" /><span class="face"><span class="tick"></span>Sí</span></label>
+          <label class="option"><input type="radio" name="recall_diagnosis" value="no" /><span class="face"><span class="tick"></span>No</span></label>
+        </div>
+        <p class="step-error">Elige una opción para seguir.</p>
+      </div>
+    </section>
+
+    <!-- P5: patient_retention -->
+    <section class="step" data-step="patient_retention" data-name="patient_retention" data-type="radio">
+      <div class="inner">
+        <div class="q-index">TUS PACIENTES</div>
+        <div class="q-title">¿Tus pacientes se quedan contigo a largo plazo, o les pierdes el rastro tras la primera consulta?</div>
+        <div class="options">
+          <label class="option"><input type="radio" name="patient_retention" value="stay" /><span class="face"><span class="tick"></span>Se quedan; sé exactamente quiénes regresan.</span></label>
+          <label class="option"><input type="radio" name="patient_retention" value="some" /><span class="face"><span class="tick"></span>Más o menos, tengo una idea general.</span></label>
+          <label class="option"><input type="radio" name="patient_retention" value="lost" /><span class="face"><span class="tick"></span>Ni idea, les pierdo el rastro.</span></label>
+        </div>
+        <p class="step-error">Elige una opción para seguir.</p>
+      </div>
+    </section>
+
+    <!-- P6: recovered_time (final) -->
+    <section class="step" data-step="recovered_time" data-name="recovered_time" data-type="text">
+      <div class="inner">
+        <div class="q-index">UNA ÚLTIMA COSA</div>
+        <div class="q-title">Si pudieras recuperar 5 horas por semana, ¿en qué las usarías?</div>
+        <div class="q-hint">Compartir con tu familia, un hobby, viajar… lo primero que se te venga a la mente.</div>
+        <textarea class="field" name="recovered_time" rows="2" maxlength="2000" placeholder="Las usaría para…"></textarea>
+        <div class="actions">
+          <button class="btn" type="submit" id="submitBtn">Enviar mis respuestas</button>
+          <div class="enter-hint">o presiona <b>Enter ↵</b></div>
+        </div>
+        <p class="step-error">Escribe una frase para seguir.</p>
+      </div>
+    </section>
+
+    <!-- Thanks -->
+    <section class="step" data-step="thanks">
+      <div class="inner thanks" aria-live="polite">
+        <div class="seal">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
+        </div>
+        <h2>¡Gracias por tu tiempo!</h2>
+        <p>Nos ayudaste a que la charla hable de lo que de verdad importa. Ahora viene la parte divertida: queremos verte ahí.</p>
+        <div class="invite">
+          <div class="invite-k">TE ESPERAMOS EN EL EVENTO</div>
+          <div class="invite-date">4 de septiembre</div>
+          <div class="invite-org">con UNANESO C.A.</div>
+        </div>
+        <div class="kicker">Y prepárate: parte de lo que respondiste va a estar en la pantalla.</div>
+      </div>
+    </section>
+
+  </form>
+
+  <script>
+    (function () {
+      var SUPABASE_URL = "https://nhrvrpaxvcterehnjtwf.supabase.co";
+      var SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ocnZycGF4dmN0ZXJlaG5qdHdmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAwNTg3NzcsImV4cCI6MjA3NTYzNDc3N30.oCJvIGY_9mXMO5Vx8tCGJfVe_E-Imf8XuS7_lmNQD9o";
+
+      var form = document.getElementById("survey");
+      var steps = Array.prototype.slice.call(form.querySelectorAll(".step"));
+      var order = steps.map(function (s) { return s.getAttribute("data-step"); });
+      var fill = document.getElementById("fill");
+      var backBtn = document.getElementById("back");
+      var submitBtn = document.getElementById("submitBtn");
+      var current = 0;
+
+      function stepEl(i) { return steps[i]; }
+      function nameOf(i) { return stepEl(i).getAttribute("data-name"); }
+      function typeOf(i) { return stepEl(i).getAttribute("data-type"); }
+
+      function valueOf(name) {
+        var picked = form.querySelector('input[name="' + name + '"]:checked');
+        if (picked) return picked.value;
+        var el = form.querySelector('[name="' + name + '"]');
+        return el ? (el.value || "").trim() : "";
+      }
+
+      function show(i) {
+        steps[current].classList.remove("active");
+        current = i;
+        var el = steps[current];
+        el.classList.add("active");
+        fill.style.width = Math.round(current / (steps.length - 1) * 100) + "%";
+        backBtn.classList.toggle("show", current > 0 && order[current] !== "thanks");
+        window.scrollTo(0, 0);
+        var t = typeOf(current);
+        if (t === "text") {
+          var input = el.querySelector("textarea.field, input.field");
+          if (input) setTimeout(function () { input.focus(); }, 260);
+        }
+        clearError();
+      }
+
+      function clearError() { var e = steps[current].querySelector(".step-error"); if (e) e.classList.remove("show"); }
+      function showError(msg) { var e = steps[current].querySelector(".step-error"); if (e) { if (msg) e.textContent = msg; e.classList.add("show"); } }
+
+      function validateCurrent() {
+        var t = typeOf(current);
+        if (t === "radio") {
+          var v = valueOf(nameOf(current));
+          if (!v) return false;
+          var checked = form.querySelector('input[name="' + nameOf(current) + '"]:checked');
+          if (checked && checked.hasAttribute("data-hold")) {
+            var other = stepEl(current).querySelector("[data-other]");
+            if (other && !other.value.trim()) return false;
+          }
+          return true;
+        }
+        if (t === "text") return valueOf(nameOf(current)).length > 0;
+        return true;
+      }
+
+      function next() {
+        if (typeOf(current) && !validateCurrent()) { showError(); return; }
+        if (current < steps.length - 1) show(current + 1);
+      }
+
+      form.querySelectorAll("[data-next]").forEach(function (b) { b.addEventListener("click", next); });
+      backBtn.addEventListener("click", function () { if (current > 0) show(current - 1); });
+
+      form.querySelectorAll('input[type="radio"]').forEach(function (r) {
+        r.addEventListener("change", function () {
+          clearError();
+          var step = r.closest(".step");
+          var reveal = step.querySelector("[data-reveal]");
+          if (r.hasAttribute("data-hold")) {
+            if (reveal) {
+              reveal.classList.add("show");
+              var inp = reveal.querySelector(".field");
+              if (inp) setTimeout(function () { inp.focus(); }, 150);
+            }
+            return;
+          }
+          if (reveal) reveal.classList.remove("show");
+          setTimeout(next, 280);
+        });
+      });
+
+      form.querySelectorAll("textarea.field").forEach(function (ta) {
+        ta.addEventListener("keydown", function (e) {
+          if (e.key !== "Enter" || e.shiftKey) return;
+          e.preventDefault();
+          var stepNode = ta.closest(".step");
+          if (stepNode && stepNode.querySelector('button[type="submit"]')) {
+            if (!valueOf("recovered_time")) { showError(); return; }
+            submit();
+          } else { next(); }
+        });
+      });
+
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        if (!valueOf("recovered_time")) { showError(); return; }
+        submit();
+      });
+
+      function submit() {
+        var isOther = valueOf("role") === "other";
+        var payload = {
+          role: valueOf("role"),
+          role_other: isOther ? (valueOf("role_other") || null) : null,
+          motivation: valueOf("motivation"),
+          admin_hours: valueOf("admin_hours"),
+          recall_diagnosis: valueOf("recall_diagnosis"),
+          patient_retention: valueOf("patient_retention"),
+          recovered_time: valueOf("recovered_time")
+        };
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Enviando…";
+
+        fetch(SUPABASE_URL + "/rest/v1/event_survey_responses", {
+          method: "POST",
+          headers: {
+            "apikey": SUPABASE_ANON_KEY,
+            "Authorization": "Bearer " + SUPABASE_ANON_KEY,
+            "Content-Type": "application/json",
+            "Prefer": "return=minimal"
+          },
+          body: JSON.stringify(payload)
+        }).then(function (res) {
+          if (!res.ok) throw new Error("HTTP " + res.status);
+          show(order.indexOf("thanks"));
+        }).catch(function () {
+          submitBtn.disabled = false;
+          submitBtn.textContent = "Enviar mis respuestas";
+          showError("No se pudo enviar. Revisa tu conexión e inténtalo otra vez.");
+        });
+      }
+
+      // Rotating placeholder for the motivation question.
+      var rotate = form.querySelector("textarea[data-rotate]");
+      if (rotate) {
+        var examples = ["Por el ejemplo de un familiar…", "Por pura vocación…", "Para cuidar a los demás…", "Para ganar mucho dinero…"];
+        var ri = 0;
+        setInterval(function () {
+          if (!rotate.value && document.activeElement !== rotate) {
+            ri = (ri + 1) % examples.length;
+            rotate.placeholder = examples[ri];
+          }
+        }, 2400);
+      }
+
+      steps[0].classList.add("active");
+      show(0);
+    })();
+  </script>
+</body>
+</html>
